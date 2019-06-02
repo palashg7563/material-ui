@@ -1,6 +1,6 @@
 import React from 'react';
 import { assert } from 'chai';
-import { getClasses, createMount } from '@material-ui/core/test-utils';
+import { getClasses, createMount, describeConformance } from '@material-ui/core/test-utils';
 import MenuItem from '../MenuItem';
 import Input from '../Input';
 import Select from './Select';
@@ -24,17 +24,21 @@ describe('<Select />', () => {
 
   before(() => {
     classes = getClasses(<Select {...defaultProps} />);
-    mount = createMount();
+    // StrictModeViolation: test uses MenuItem
+    mount = createMount({ strict: false });
   });
 
   after(() => {
     mount.cleanUp();
   });
 
-  it('should render a correct top element', () => {
-    const wrapper = mount(<Select {...defaultProps} />);
-    assert.strictEqual(wrapper.find(Input).exists(), true);
-  });
+  describeConformance(<Select {...defaultProps} />, () => ({
+    classes,
+    inheritComponent: Input,
+    mount,
+    refInstanceof: window.HTMLDivElement,
+    skip: ['componentProp', 'rootClass'],
+  }));
 
   it('should provide the classes to the input component', () => {
     const wrapper = mount(<Select {...defaultProps} />);
